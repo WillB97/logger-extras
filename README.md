@@ -18,13 +18,15 @@ pip install logging-extras[mqtt]
 
 ## Tools
 
-- `MQTTConfig` - A configuration class for an MQTT connection.
-- `MQTThandler` - A logging handler that publishes logs to an MQTT broker.
-- `MQTTSubscriber` - A logging listener that subscribes to an MQTT broker and logs messages.
 - `RelativeTimeFilter` - A logging filter that adds a relative time to the log record.
 - `DiffTimeFilter` - A logging filter that adds a time difference to the log record.
 - `TieredFormatter` - A logging formatter that allows for different formatting based on the log level.
 - `log_function_call` - A decorator that logs the arguments and return value of a function call.
+
+Upcomming tools:
+
+- `MQTThandler` - A logging handler that publishes logs to an MQTT broker.
+- `MQTTSubscriber` - A logging listener that subscribes to an MQTT broker and logs messages.
 
 ## Examples
 
