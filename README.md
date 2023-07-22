@@ -28,6 +28,64 @@ pip install logging-extras[mqtt]
 
 ## Examples
 
+### `RelativeTimeFilter`
+
+```python
+import logging
+from time import sleep
+
+from logger_extras import RelativeTimeFilter
+
+handler = logging.StreamHandler()
+relative_time_filter = RelativeTimeFilter()
+handler.addFilter(relative_time_filter)
+handler.setFormatter(logging.Formatter("%(reltime) - %(message)s"))
+
+logger = logging.getLogger(__name__)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+logger.info("Hello World!")
+sleep(2)
+logger.info("Hello World!")
+relative_time_filter.reset_time_reference()
+sleep(1)
+logger.info("Hello World!")
+
+# This will log the following:
+# 0:00:00 - Hello World!
+# 0:00:02 - Hello World!
+# 0:00:01 - Hello World!
+```
+
+### `DiffTimeFilter`
+
+```python
+import logging
+from time import sleep
+
+from logger_extras import DiffTimeFilter
+
+handler = logging.StreamHandler()
+handler.addFilter(DiffTimeFilter())
+handler.setFormatter(logging.Formatter("%(difftime) - %(message)s"))
+
+logger = logging.getLogger(__name__)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+logger.info("Hello World!")
+sleep(2)
+logger.info("Hello World!")
+sleep(1)
+logger.info("Hello World!")
+
+# This will log the following:
+# 0:00:00 - Hello World!
+# 0:00:02 - Hello World!
+# 0:00:01 - Hello World!
+```
+
 ### `log_function_call`
 
 ```python
