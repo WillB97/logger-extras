@@ -49,7 +49,7 @@ class TieredFormatter(logging.Formatter):
 
         try:
             # Replace the original format with one customized by logging level
-            self._fmt = self.level_fmts.get(record.levelno, self._fmt)
+            self._style._fmt = self.level_fmts.get(record.levelno, self._fmt or "")
 
             # Call the original format command to do the grunt work
             result = super().format(record)
