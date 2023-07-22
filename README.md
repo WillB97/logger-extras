@@ -86,6 +86,45 @@ logger.info("Hello World!")
 # 0:00:01 - Hello World!
 ```
 
+### `TieredFormatter`
+
+```python
+import logging
+
+from logger_extras import TieredFormatter
+
+handler = logging.StreamHandler()
+handler.setFormatter(
+    TieredFormatter(
+        fmt="%(levelname)s - %(message)s",
+        level_fmts={
+            logging.DEBUG: "%(levelname)s - %(funcName)s:%(lineno)d - %(message)s",
+            logging.INFO: "%(message)s",
+        },
+        datefmt=None,
+        style="%",
+        validate=True,
+    )
+)
+
+logger = logging.getLogger(__name__)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+logger.debug("Hello World!")
+logger.info("Hello World!")
+logger.warning("Hello World!")
+logger.error("Hello World!")
+logger.critical("Hello World!")
+
+# This will log the following:
+# DEBUG - __main__:19 - Hello World!
+# Hello World!
+# WARNING - Hello World!
+# ERROR - Hello World!
+# CRITICAL - Hello World!
+```
+
 ### `log_function_call`
 
 ```python
