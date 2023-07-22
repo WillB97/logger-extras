@@ -41,7 +41,7 @@ from logger_extras import RelativeTimeFilter
 handler = logging.StreamHandler()
 relative_time_filter = RelativeTimeFilter()
 handler.addFilter(relative_time_filter)
-handler.setFormatter(logging.Formatter("%(reltime) - %(message)s"))
+handler.setFormatter(logging.Formatter("%(reltime).3f - %(message)s"))
 
 logger = logging.getLogger(__name__)
 logger.addHandler(handler)
@@ -70,7 +70,7 @@ from logger_extras import DiffTimeFilter
 
 handler = logging.StreamHandler()
 handler.addFilter(DiffTimeFilter())
-handler.setFormatter(logging.Formatter("%(difftime) - %(message)s"))
+handler.setFormatter(logging.Formatter("%(difftime).3f - %(message)s"))
 
 logger = logging.getLogger(__name__)
 logger.addHandler(handler)

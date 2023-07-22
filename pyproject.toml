@@ -57,8 +57,8 @@ classifiers = [
 ]
 
 [project.urls]
-Repository = "https://github.com/WillB97/logger_extras"
-Homepage = "https://github.com/WillB97/logger_extras"
+Repository = "https://github.com/WillB97/logger-extras"
+Homepage = "https://github.com/WillB97/logger-extras"
 
 [project.optional-dependencies]
 dev = [

@@ -6,7 +6,7 @@ DiffTimeFilter - A logging filter that adds a time difference to the log record.
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from time import time
 
 
 class RelativeTimeFilter(logging.Filter):
@@ -21,14 +21,15 @@ class RelativeTimeFilter(logging.Filter):
     def __init__(self, *args, **kwargs):  # type: ignore
         super().__init__(*args, **kwargs)
         # Set the time reference to now when the filter is created.
-        self.time_reference = datetime.now()
+        self.time_reference = time()
 
     def filter(self, record: logging.LogRecord) -> bool:
-        now = datetime.now()
+        now = time()
 
         if not self.time_reference:
             self.time_reference = now
 
+        # Timedelta objects have very limited formatting options, so we use float seconds.
         record.reltime = now - self.time_reference
 
         return True
@@ -37,7 +38,7 @@ class RelativeTimeFilter(logging.Filter):
         """
         Update the time reference to now.
         """
-        self.time_reference = datetime.now()
+        self.time_reference = time()
 
 
 class DiffTimeFilter(logging.Filter):
@@ -50,11 +51,12 @@ class DiffTimeFilter(logging.Filter):
     last_time = None
 
     def filter(self, record: logging.LogRecord) -> bool:
-        now = datetime.now()
+        now = time()
 
         if not self.last_time:
             self.last_time = now
 
+        # Timedelta objects have very limited formatting options, so we use float seconds.
         record.difftime = now - self.last_time
 
         self.last_time = now

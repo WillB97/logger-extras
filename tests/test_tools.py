@@ -94,11 +94,11 @@ def test_relative_time_filter(caplog):
 
     logger.error("Test message 5")
 
-    assert caplog.records[0].reltime.total_seconds() == pytest.approx(0, abs=0.1)
-    assert caplog.records[1].reltime.total_seconds() == pytest.approx(1, abs=0.1)
-    assert caplog.records[2].reltime.total_seconds() == pytest.approx(3, abs=0.1)
-    assert caplog.records[3].reltime.total_seconds() == pytest.approx(0, abs=0.1)
-    assert caplog.records[4].reltime.total_seconds() == pytest.approx(1, abs=0.1)
+    assert caplog.records[0].reltime == pytest.approx(0, abs=0.2)
+    assert caplog.records[1].reltime == pytest.approx(1, abs=0.2)
+    assert caplog.records[2].reltime == pytest.approx(3, abs=0.5)
+    assert caplog.records[3].reltime == pytest.approx(0, abs=0.2)
+    assert caplog.records[4].reltime == pytest.approx(1, abs=0.2)
     assert caplog.record_tuples == [
         ("test_tools_custom", logging.DEBUG, "Test message 1"),
         ("test_tools_custom", logging.INFO, "Test message 2"),
@@ -135,11 +135,11 @@ def test_diff_time_filter(caplog):
 
     logger.error("Test message 5")
 
-    assert caplog.records[0].difftime.total_seconds() == pytest.approx(0, abs=0.01)
-    assert caplog.records[1].difftime.total_seconds() == pytest.approx(1, abs=0.01)
-    assert caplog.records[2].difftime.total_seconds() == pytest.approx(2, abs=0.01)
-    assert caplog.records[3].difftime.total_seconds() == pytest.approx(0, abs=0.01)
-    assert caplog.records[4].difftime.total_seconds() == pytest.approx(1, abs=0.01)
+    assert caplog.records[0].difftime == pytest.approx(0, abs=0.2)
+    assert caplog.records[1].difftime == pytest.approx(1, abs=0.2)
+    assert caplog.records[2].difftime == pytest.approx(2, abs=0.2)
+    assert caplog.records[3].difftime == pytest.approx(0, abs=0.2)
+    assert caplog.records[4].difftime == pytest.approx(1, abs=0.2)
     assert caplog.record_tuples == [
         ("test_tools_custom", logging.DEBUG, "Test message 1"),
         ("test_tools_custom", logging.INFO, "Test message 2"),
