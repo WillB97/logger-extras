@@ -18,6 +18,7 @@ pip install logging-extras[mqtt]
 
 ## Tools
 
+- `MQTThandler` - A logging handler that publishes logs to an MQTT broker.
 - `RelativeTimeFilter` - A logging filter that adds a relative time to the log record.
 - `DiffTimeFilter` - A logging filter that adds a time difference to the log record.
 - `TieredFormatter` - A logging formatter that allows for different formatting based on the log level.
@@ -25,10 +26,40 @@ pip install logging-extras[mqtt]
 
 Upcomming tools:
 
-- `MQTThandler` - A logging handler that publishes logs to an MQTT broker.
 - `MQTTSubscriber` - A logging listener that subscribes to an MQTT broker and logs messages.
 
 ## Examples
+
+### `MQTThandler`
+
+```python
+import logging
+
+from paho.mqtt.client import Client
+from logger_extras import MQTTConfig, MQTThandler
+
+handler = MQTThandler(
+    host="localhost",
+    topic="logs",
+    append_logger_name=True,
+)
+handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s)"))
+
+logger = logging.getLogger(__name__)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+logger.info("Hello World!")
+
+# This will publish the following message to the MQTT broker on the topic "logs/__main__":
+# {
+#   "timestamp": 1690226241.740354,
+#   "message": "INFO - Hello World!",
+#   "raw_message": "Hello World!",
+#   "level": "INFO", "name": "__main__"
+# }
+
+```
 
 ### `RelativeTimeFilter`
 
