@@ -2,7 +2,10 @@
 from ._version import __version__
 from .filters import DiffTimeFilter, RelativeTimeFilter
 from .formatters import TieredFormatter
-from .mqtt import MQTTHandler
+try:
+    from .mqtt import MQTTHandler
+except ImportError:
+    MQTTHandler = None
 from .utils import log_function_call
 
 __all__ = [
