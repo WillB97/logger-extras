@@ -24,12 +24,14 @@ class MQTTHandler(logging.Handler):
         username: str = '',
         password: str = '',
         append_logger_name: bool = False,
+        connected_topic: str = '',
     ):
         super().__init__()
 
         self._topic = topic
         self._qos = qos
         self._append_logger_name = append_logger_name
+        self._connected_topic = connected_topic
 
         self.mqtt = mqtt.Client(
             client_id=client_id,
@@ -55,8 +57,16 @@ class MQTTHandler(logging.Handler):
             print(f"Failed to connect to MQTT broker at {host}:{port}")
             return
         self.mqtt.loop_start()
+        if connected_topic:
+            self.mqtt.publish(connected_topic, '{"state": "connected"}', qos=1, retain=True)
+            self.mqtt.will_set(
+                connected_topic, '{"state": "disconnected"}', qos=1, retain=True)
 
     def __del__(self) -> None:
+        if self._connected_topic:
+            res = self.mqtt.publish(
+                self._connected_topic, '{"state": "disconnected"}', qos=1, retain=True)
+            res.wait_for_publish(1)
         self.mqtt.disconnect()
         self.mqtt.loop_stop()
 
