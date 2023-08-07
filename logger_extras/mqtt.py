@@ -59,7 +59,7 @@ class MQTTHandler(logging.Handler):
                 port=port,
                 keepalive=keepalive,
                 bind_address=bind_address)
-        except (TimeoutError, ValueError, ConnectionRefusedError):
+        except Exception:
             print(f"Failed to connect to MQTT broker at {host}:{port}")
             return
         self.mqtt.loop_start()
@@ -78,7 +78,7 @@ class MQTTHandler(logging.Handler):
                 self._connected_topic, '{"state": "disconnected"}', qos=1, retain=True)
             try:
                 res.wait_for_publish(1)
-            except (ValueError, RuntimeError):
+            except Exception:
                 pass
         self.mqtt.disconnect()
         self.mqtt.loop_stop()
