@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import atexit
 import json
 import logging
 from typing import Any
@@ -62,6 +63,7 @@ class MQTTHandler(logging.Handler):
         except Exception:
             print(f"Failed to connect to MQTT broker at {host}:{port}")
             return
+        atexit.register(self.mqtt.loop_stop)
         self.mqtt.loop_start()
 
     def _on_connect(
@@ -71,17 +73,6 @@ class MQTTHandler(logging.Handler):
         if self._connected_topic:
             client.publish(
                 self._connected_topic, '{"state": "connected"}', qos=1, retain=True)
-
-    def __del__(self) -> None:
-        if self._connected_topic:
-            res = self.mqtt.publish(
-                self._connected_topic, '{"state": "disconnected"}', qos=1, retain=True)
-            try:
-                res.wait_for_publish(1)
-            except Exception:
-                pass
-        self.mqtt.disconnect()
-        self.mqtt.loop_stop()
 
     def emit(self, record: logging.LogRecord) -> None:
         try:
