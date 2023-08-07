@@ -76,7 +76,10 @@ class MQTTHandler(logging.Handler):
         if self._connected_topic:
             res = self.mqtt.publish(
                 self._connected_topic, '{"state": "disconnected"}', qos=1, retain=True)
-            res.wait_for_publish(1)
+            try:
+                res.wait_for_publish(1)
+            except (ValueError, RuntimeError):
+                pass
         self.mqtt.disconnect()
         self.mqtt.loop_stop()
 
@@ -92,6 +95,9 @@ class MQTTHandler(logging.Handler):
                 topic = f"{self._topic}/{record.name.replace('.', '/')}"
             else:
                 topic = self._topic
+
+            if self.mqtt.is_connected() is False:
+                self.mqtt.reconnect()
 
             msg = self.format(record)
 
