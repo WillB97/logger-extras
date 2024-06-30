@@ -35,16 +35,13 @@ jobs:
         python -m pip install .[dev,mqtt]
     - name: Lint
       run: |
-        make lint
-    - name: Isort
-      run: |
-        make isort-check
+        poe lint
     - name: Typecheck
       run: |
-        make type
+        poe type
     - name: Run tests
       run: |
-        make test
+        poe test
 
   build:
     permissions:
@@ -61,12 +58,12 @@ jobs:
         python-version: "3.8"
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip build
+        python -m pip install --upgrade pip build poethepoet
         # Install package to generate version info
         python -m pip install .
     - name: Build package
       run: |
-        make build
+        poe build
     - name: Save built package
       uses: actions/upload-artifact@v4
       with:
