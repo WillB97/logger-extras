@@ -18,7 +18,7 @@ class MQTTHandler(logging.Handler):
         bind_address: str = '',
         client_id: str = '',
         userdata: Any = None,
-        protocol: mqtt.MQTTProtocolVersion = mqtt.MQTTProtocolVersion.MQTTv311,
+        protocol: mqtt.MQTTProtocolVersion = mqtt.MQTTProtocolVersion.MQTTv5,
         qos: int = 0,
         transport: Literal['tcp', 'websockets', 'unix'] = 'tcp',
         use_tls: bool | str = False,
