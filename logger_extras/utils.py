@@ -1,5 +1,7 @@
 """
-A collection of logging utilities, including:
+A collection of logging utilities.
+
+Includes:
 log_function_call - A decorator that logs the arguments and return value of a function call.
 """
 from __future__ import annotations

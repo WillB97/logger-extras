@@ -10,10 +10,10 @@ except ImportError:
     MQTTHandler = None  # type: ignore
 
 __all__ = [
-    '__version__',
-    'log_function_call',
     'DiffTimeFilter',
     'MQTTHandler',
     'RelativeTimeFilter',
     'TieredFormatter',
+    '__version__',
+    'log_function_call',
 ]
