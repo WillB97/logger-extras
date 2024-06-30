@@ -1,5 +1,6 @@
 """
 Logging filters for use with the Python logging module.
+
 RelativeTimeFilter - A logging filter that adds a relative time to the log record.
 DiffTimeFilter - A logging filter that adds a time difference to the log record.
 """
@@ -11,8 +12,9 @@ from time import time
 
 class RelativeTimeFilter(logging.Filter):
     """
-    Abuse of a logging filter to augment the logged record with timings relative
-    to a settable point.
+    Abuse of a logging filter to augment the logged record.
+
+    Adds timings relativeto a settable point.
 
     For a justification of this abuse see:
        https://docs.python.org/3/howto/logging-cookbook.html#filters-contextual
@@ -24,6 +26,7 @@ class RelativeTimeFilter(logging.Filter):
         self.time_reference = time()
 
     def filter(self, record: logging.LogRecord) -> bool:
+        """Add the relative time to the log record."""
         now = time()
 
         if not self.time_reference:
@@ -35,9 +38,7 @@ class RelativeTimeFilter(logging.Filter):
         return True
 
     def reset_time_reference(self) -> None:
-        """
-        Update the time reference to now.
-        """
+        """Update the time reference to now."""
         self.time_reference = time()
 
 
@@ -48,9 +49,11 @@ class DiffTimeFilter(logging.Filter):
     For a justification of this abuse see:
        https://docs.python.org/3/howto/logging-cookbook.html#filters-contextual
     """
+
     last_time = None
 
     def filter(self, record: logging.LogRecord) -> bool:
+        """Add the time difference to the log record."""
         now = time()
 
         if not self.last_time:

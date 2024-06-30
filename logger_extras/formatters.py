@@ -1,5 +1,7 @@
 """
-A collection of logging formatters, including:
+A collection of logging formatters.
+
+Includes:
 TieredFormatter - A logging formatter that allows for different formats based on the log level.
 """
 from __future__ import annotations
@@ -24,6 +26,7 @@ class TieredFormatter(logging.Formatter):
     :param kwargs: Additional keyword arguments to pass to the logging.Formatter constructor.
     :return: A logging formatter.
     """
+
     def __init__(
         self,
         fmt: str | None = None,
@@ -42,14 +45,13 @@ class TieredFormatter(logging.Formatter):
         :param record: The record to be formatted.
         :return: The formatted record.
         """
-
         # Save the original format configured by the user
         # when the logger formatter was instantiated
         format_orig = self._fmt
 
         try:
             # Replace the original format with one customized by logging level
-            self._style._fmt = self.level_fmts.get(record.levelno, self._fmt or "")
+            self._style._fmt = self.level_fmts.get(record.levelno, self._fmt or "")  # noqa: SLF001
 
             # Call the original format command to do the grunt work
             result = super().format(record)

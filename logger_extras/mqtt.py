@@ -1,3 +1,10 @@
+"""
+An MQTT handler for the Python logging module.
+
+This handler sends log messages to an MQTT broker.
+Reconnects automatically if the connection is lost
+and publishes messages in a background thread.
+"""
 from __future__ import annotations
 
 import atexit
@@ -9,6 +16,8 @@ import paho.mqtt.client as mqtt
 
 
 class MQTTHandler(logging.Handler):
+    """An MQTT handler for the Python logging module."""
+
     def __init__(
         self,
         host: str,
@@ -80,6 +89,7 @@ class MQTTHandler(logging.Handler):
                 self._connected_topic, '{"state": "connected"}', qos=1, retain=True)
 
     def emit(self, record: logging.LogRecord) -> None:
+        """Emit a log message to the MQTT broker."""
         try:
             if (
                 self.mqtt.logger
