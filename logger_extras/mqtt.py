@@ -55,7 +55,7 @@ class MQTTHandler(logging.Handler):
                 self._connected_topic, '{"state": "disconnected"}', qos=1, retain=True)
 
         try:
-            self.mqtt.connect(
+            self.mqtt.connect_async(
                 host=host,
                 port=port,
                 keepalive=keepalive,
@@ -86,9 +86,6 @@ class MQTTHandler(logging.Handler):
                 topic = f"{self._topic}/{record.name.replace('.', '/')}"
             else:
                 topic = self._topic
-
-            if self.mqtt.is_connected() is False:
-                self.mqtt.reconnect()
 
             msg = self.format(record)
 
