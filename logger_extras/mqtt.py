@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import atexit
 import json
 import logging
-from typing import Any
+from typing import Any, Literal
 
 import paho.mqtt.client as mqtt
 
@@ -17,9 +18,9 @@ class MQTTHandler(logging.Handler):
         bind_address: str = '',
         client_id: str = '',
         userdata: Any = None,
-        protocol: int = mqtt.MQTTv311,
+        protocol: mqtt.MQTTProtocolVersion = mqtt.MQTTProtocolVersion.MQTTv5,
         qos: int = 0,
-        transport: str = 'tcp',
+        transport: Literal['tcp', 'websockets', 'unix'] = 'tcp',
         use_tls: bool | str = False,
         username: str = '',
         password: str = '',
@@ -34,6 +35,7 @@ class MQTTHandler(logging.Handler):
         self._connected_topic = connected_topic
 
         self.mqtt = mqtt.Client(
+            callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
             client_id=client_id,
             userdata=userdata,
             protocol=protocol,
@@ -54,7 +56,7 @@ class MQTTHandler(logging.Handler):
                 self._connected_topic, '{"state": "disconnected"}', qos=1, retain=True)
 
         try:
-            self.mqtt.connect(
+            self.mqtt.connect_async(
                 host=host,
                 port=port,
                 keepalive=keepalive,
@@ -62,32 +64,26 @@ class MQTTHandler(logging.Handler):
         except Exception:
             print(f"Failed to connect to MQTT broker at {host}:{port}")
             return
+        atexit.register(self.mqtt.loop_stop)
         self.mqtt.loop_start()
 
     def _on_connect(
-        self, client: mqtt.Client, userdata: Any, flags: dict[str, int], rc: int,
+        self,
+        client: mqtt.Client,
+        userdata: Any,
+        connect_flags: mqtt.ConnectFlags,
+        reason_code: mqtt.ReasonCode,
         properties: mqtt.Properties | None = None,
     ) -> None:
         if self._connected_topic:
             client.publish(
                 self._connected_topic, '{"state": "connected"}', qos=1, retain=True)
 
-    def __del__(self) -> None:
-        if self._connected_topic:
-            res = self.mqtt.publish(
-                self._connected_topic, '{"state": "disconnected"}', qos=1, retain=True)
-            try:
-                res.wait_for_publish(1)
-            except Exception:
-                pass
-        self.mqtt.disconnect()
-        self.mqtt.loop_stop()
-
     def emit(self, record: logging.LogRecord) -> None:
         try:
             if (
-                self.mqtt._logger  # type: ignore[attr-defined]
-                and record.name == self.mqtt._logger.name  # type: ignore[attr-defined]
+                self.mqtt.logger
+                and record.name == self.mqtt.logger.name
             ):
                 # Avoid sending log messages of the MQTT client itself
                 return
@@ -95,9 +91,6 @@ class MQTTHandler(logging.Handler):
                 topic = f"{self._topic}/{record.name.replace('.', '/')}"
             else:
                 topic = self._topic
-
-            if self.mqtt.is_connected() is False:
-                self.mqtt.reconnect()
 
             msg = self.format(record)
 
