@@ -37,6 +37,7 @@ class MQTTHandler(logging.Handler):
         connected_topic: str = '',
         connected_callback: Callable[[], None] | None = None,
         disconnected_callback: Callable[[], None] | None = None,
+        extra_data: dict[str, str | float | int | None] | None = None,
     ):
         super().__init__()
 
@@ -46,6 +47,7 @@ class MQTTHandler(logging.Handler):
         self._connected_topic = connected_topic
         self._connected_callback = connected_callback
         self._disconnected_callback = disconnected_callback
+        self.extra_data = extra_data
 
         self.mqtt = mqtt.Client(
             callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
@@ -120,16 +122,19 @@ class MQTTHandler(logging.Handler):
                 topic = self._topic
 
             msg = self.format(record)
+            payload = {
+                "timestamp": record.created,
+                "message": msg,
+                "raw_message": record.message,
+                "level": record.levelname,
+                "name": record.name,
+            }
+            if self.extra_data:
+                payload.update(self.extra_data)
 
             _ = self.mqtt.publish(
                 topic=topic,
-                payload=json.dumps({
-                    "timestamp": record.created,
-                    "message": msg,
-                    "raw_message": record.message,
-                    "level": record.levelname,
-                    "name": record.name,
-                }),
+                payload=json.dumps(payload),
                 qos=self._qos)
             self.flush()
         except Exception:
