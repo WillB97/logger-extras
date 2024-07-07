@@ -10,7 +10,7 @@ from __future__ import annotations
 import atexit
 import json
 import logging
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 
 import paho.mqtt.client as mqtt
 
@@ -35,6 +35,8 @@ class MQTTHandler(logging.Handler):
         password: str = '',
         append_logger_name: bool = False,
         connected_topic: str = '',
+        connected_callback: Callable[[], None] | None = None,
+        disconnected_callback: Callable[[], None] | None = None,
     ):
         super().__init__()
 
@@ -42,6 +44,8 @@ class MQTTHandler(logging.Handler):
         self._qos = qos
         self._append_logger_name = append_logger_name
         self._connected_topic = connected_topic
+        self._connected_callback = connected_callback
+        self._disconnected_callback = disconnected_callback
 
         self.mqtt = mqtt.Client(
             callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
@@ -87,6 +91,19 @@ class MQTTHandler(logging.Handler):
         if self._connected_topic:
             client.publish(
                 self._connected_topic, '{"state": "connected"}', qos=1, retain=True)
+        if not reason_code.is_failure and self._connected_callback is not None:
+            self._connected_callback()
+
+    def _on_disconnect(
+        self,
+        client: mqtt.Client,
+        userdata: Any,
+        connect_flags: mqtt.ConnectFlags,
+        reason_code: mqtt.ReasonCode,
+        properties: mqtt.Properties | None = None,
+    ) -> None:
+        if self._disconnected_callback is not None:
+            self._disconnected_callback()
 
     def emit(self, record: logging.LogRecord) -> None:
         """Emit a log message to the MQTT broker."""
