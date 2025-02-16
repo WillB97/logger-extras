@@ -65,6 +65,8 @@ class MQTTHandler(logging.Handler):
             self.mqtt.username_pw_set(username, password)
 
         self.mqtt.on_connect = self._on_connect
+        self.mqtt.on_disconnect = self._on_disconnect
+
         if self._connected_topic:
             # This must be set before connecting
             self.mqtt.will_set(
@@ -100,7 +102,7 @@ class MQTTHandler(logging.Handler):
         self,
         client: mqtt.Client,
         userdata: Any,
-        connect_flags: mqtt.ConnectFlags,
+        connect_flags: mqtt.DisconnectFlags,
         reason_code: mqtt.ReasonCode,
         properties: mqtt.Properties | None = None,
     ) -> None:
