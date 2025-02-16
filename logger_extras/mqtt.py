@@ -65,6 +65,7 @@ class MQTTHandler(logging.Handler):
             self.mqtt.username_pw_set(username, password)
 
         self.mqtt.on_connect = self._on_connect
+        self.mqtt.on_message = self._on_message
         self.mqtt.on_disconnect = self._on_disconnect
 
         if self._connected_topic:
@@ -95,8 +96,20 @@ class MQTTHandler(logging.Handler):
         if self._connected_topic:
             client.publish(
                 self._connected_topic, '{"state": "connected"}', qos=1, retain=True)
+            client.subscribe(self._connected_topic, qos=1)
         if not reason_code.is_failure and self._connected_callback is not None:
             self._connected_callback()
+
+    def _on_message(
+        self,
+        client: mqtt.Client,
+        userdata: Any,
+        message: mqtt.MQTTMessage,
+    ) -> None:
+        if message.topic == self._connected_topic:
+            if message.payload == b'{"state": "disconnected"}':
+                client.publish(
+                    self._connected_topic, '{"state": "connected"}', qos=1, retain=True)
 
     def _on_disconnect(
         self,
